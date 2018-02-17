@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Aile Soy Ağacı Görüntüleme | Sinan TAVİLOĞLU @2018</title>
+    <link rel="stylesheet" href="Treant.css">
+    <link rel="stylesheet" href="color.css">
+</head>
+
+<body>
+
+    <div>
+        <p>1. turkiye.gov.tr adresinde soy ağacınızı görüntülediğiniz sayfayı .html olarak kaydedin.</p>
+        <p>2. aşağıdaki butonu kullanarak kaydettiğiniz dosyayı seçin ve soy ağacınızı görüntüleyin.</p>
+        <p>yazılım tarayıcınızda çalışmaktadır, bilgilerinizi hiç bir yere göndermez. DON'T PANIC!</p>
+        <p>soy ağacınızı fotoğraflı görüntülemek isterseniz, bu sayfayı bilgisayarınıza kaydedin, ya da <a href="https://github.com/staviloglu/Taviloglu.FamilyTree">github hesabımdan</a> indirin.</p>
+        <p>dosya ismi {ad}_{soyad}_{doğumyeri}{doğumtarihi}.jpg olacak şekilde fotoğrafları hazırlayıp yazılımın dosyaları ile aynı klasöre bırakın</p>
+        <p>html dosyanızı tekrar yüklediğinizde fotoğraflı soy ağacınızı görebilirsiniz.</p> 
+        <p></p>
+    </div>
+
+    <input type='file' id="uploadHtmlContent" onchange="readHtmlContent(this);" />
+
+
+    <div class="chart" id="basic-example" style="width:100%; height:100%"></div>
+    <!-- javascript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function handleError() {
+            this.src = 'default.jpg';
+        }
+
+        function readHtmlContent(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    processHtmlContent(e.target.result);
+                }
+                reader.readAsText(input.files[0]);
+            }
+        }
+
+    </script>
+    <script src="raphael.js"></script>
+    <script src="treant.js"></script>
+    <script>
+        function processHtmlContent(htmlStr) {
+
+            jQuery.fn.reverse = [].reverse;
+
+            var configObject = {
+                "chart": {
+                    "container": "#basic-example",
+                    "connectors": {
+                        "type": "step"
+                    },
+                    "node": {
+                        "HTMLclass": "nodeExample1"
+                    }
+                }, nodeStructure: {}
+            };
+
+
+            var myHtmlContent = $.parseHTML(htmlStr)
+
+            var rows = $(myHtmlContent).filter('#serviceBlock').find('#contentStart').find("table").find("tr").reverse();
+
+
+            var people = [];
+
+            rows.each(function (i, el) {
+                var $tds = $(this).find('td');
+                if ($tds.length < 12) {
+                    return true;
+                }
+
+                var person = processSpecificRow(this);
+                people.push(person);
+            });
+
+            //sondan başa doğru giderek, her objenin parentlarını bularak, children değerlerini set et
+            var i = people.length - 1;
+            while (i > -1) {
+                var parentKinshipKey = getParentKinshipKey(people[i].text.Kinship);
+                if (parentKinshipKey == null) break;
+                var parent = getPersonHavingKinship(people, parentKinshipKey);
+
+                //kaydı olan parenti doğru bilgiler ile değiştir
+                for (var j = 0; j < parent.children.length; j++) {
+                    if (people[i].text.name.replace(/\s/g, '').startsWith(parent.children[j].text.name.replace(/\s/g, ''))) {
+                        parent.children.splice(j, 1);
+                        break;
+                    }
+                }
+
+                parent.children.push(people[i]);
+                i--;
+            }
+
+            //Kinship değerini göstermeyeceğiz
+            people.forEach(person => {
+                delete person.text.Kinship;
+            });
+
+            //ilk obje tree diagram için root node olarak kullanılacak
+            configObject.nodeStructure = people[0];
+
+            new Treant(configObject);
+
+            $('img').on("error", handleError);
+        }
+
+        function getPersonHavingKinship(peopleArray, kinship) {
+
+            for (var i = 0, len = peopleArray.length; i < len; i++)
+                if (peopleArray[i].text.Kinship == kinship) return peopleArray[i];
+        }
+
+        function getParentKinshipKey(kinship) {
+            if (kinship == "Kendisi") return null;
+            if (kinship == "Annesi" || kinship == "Babası") return "Kendisi";
+
+            var kinshipWords = kinship.split(" ");
+            kinshipWords.pop();
+            var lastKey = kinshipWords[kinshipWords.length - 1].replace("nın", "").replace("nin", "");
+            kinshipWords.pop();
+            kinshipWords.push(lastKey);
+            return kinshipWords.join(" ");
+        }
+
+        function processSpecificRow(row) {
+            var $tds = $(row).find('td');
+            var kinship = $tds.eq(2).text();
+
+            var fullName = $tds.eq(3).text() + " " + $tds.eq(4).text();
+            fullName = fullName.replace(" -", "");
+
+            var father = $tds.eq(5).text();
+            var mother = $tds.eq(6).text();
+            var birthPlaceAndDate = $tds.eq(7).text();
+            birthPlaceAndDate = birthPlaceAndDate.substring(0, birthPlaceAndDate.length - 10) + " " + birthPlaceAndDate.substring(birthPlaceAndDate.length - 10, birthPlaceAndDate.length);
+            var deathInfo = $tds.eq(11).text().trim();
+            var imageName = getFileName($tds.eq(3).text(), $tds.eq(4).text(), birthPlaceAndDate);
+
+            var htmlClass = "light-gray";
+            if (deathInfo.toLowerCase().includes("sağ")) {
+                deathInfo = deathInfo.replace("-", "");
+                htmlClass = "blue";
+            }
+
+            if (deathInfo.length > 10) deathInfo = deathInfo.substring(0, deathInfo.length - 10) + " " + deathInfo.substring(deathInfo.length - 10, deathInfo.length);
+            if (deathInfo == "Ölüm-") deathInfo = "Ölüm tarihi bilinmiyor";
+
+            var person = {
+                HTMLclass: htmlClass, image: imageName, text: { name: fullName, Kinship: kinship, BirthPlaceAndDate: birthPlaceAndDate, DeathInfo: deathInfo }, children: [
+                    { HTMLclass: "gray", image: getFileName(father), text: { name: father } },
+                    { HTMLclass: "gray", image: getFileName(mother), text: { name: mother } }]
+            };
+
+            return person;
+        }
+
+        //{ad}_{soyad}_{doğumyeri}{doğumtarihi}.jpg
+        //türkçe karakterleri kaldır, / karakterini kaldır, boşlukları kaldır
+        //soyadı olmayanları ya da - olanlar odluğu şekilde kullan
+        function getFileName(name, surname, birthPlaceAndDate) {
+            var arr = [name, surname, birthPlaceAndDate];
+            var fileName = arr.join("_").replace(/\//g, '').replace(/\s/g, '');
+            fileName = fileName.replace(/Ğ/g, "G").replace(/Ş/g, "S").replace(/İ/g, "I").replace(/Ö/g, "O").replace(/Ç/g, "C").replace(/Ü/g, "U");
+            return fileName.toLowerCase() + ".jpg";
+        }
+
+    </script>
+</body>
+
+</html>
