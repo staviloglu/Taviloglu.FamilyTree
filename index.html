@@ -112,7 +112,7 @@
 
                 //kaydı olan parenti doğru bilgiler ile değiştir
                 for (var j = 0; j < parent.children.length; j++) {
-                    if (people[i].text.name.replace(/\s/g, '').startsWith(parent.children[j].text.name.replace(/\s/g, ''))) {
+                    if (people[i].text.Sex == parent.children[j].text.Sex) {
                         parent.children.splice(j, 1);
                         break;
                     }
