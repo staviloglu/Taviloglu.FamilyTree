@@ -109,9 +109,9 @@
                 i--;
             }
 
-            //Kinship değerini göstermeyeceğiz
-            people.forEach(person => {
-                delete person.text.Kinship;
+             //Kinship ve Sex değerini göstermeyeceğiz
+            people.forEach(person => {  
+                deleteKinshipAndSexProperties(person);
             });
 
             //ilk obje tree diagram için root node olarak kullanılacak
@@ -120,6 +120,18 @@
             new Treant(configObject);
 
             $('img').on("error", handleError);
+        }
+		
+		function deleteKinshipAndSexProperties(person)
+        {
+                delete person.text.Kinship;
+                delete person.text.Sex;
+
+                if(person.children.length == 0) return;
+
+                person.children.forEach(parent=>{
+                    deleteKinshipAndSexProperties(parent);
+                });
         }
 
         function getPersonHavingKinship(peopleArray, kinship) {
@@ -142,6 +154,7 @@
 
         function processSpecificRow(row) {
             var $tds = $(row).find('td');
+			var sex = $tds.eq(1).text();
             var kinship = $tds.eq(2).text();
 
             var fullName = $tds.eq(3).text() + " " + $tds.eq(4).text();
@@ -164,9 +177,9 @@
             if (deathInfo == "Ölüm-") deathInfo = "Ölüm tarihi bilinmiyor";
 
             var person = {
-                HTMLclass: htmlClass, image: imageName, text: { name: fullName, Kinship: kinship, BirthPlaceAndDate: birthPlaceAndDate, DeathInfo: deathInfo }, children: [
-                    { HTMLclass: "gray", image: getFileName(father), text: { name: father } },
-                    { HTMLclass: "gray", image: getFileName(mother), text: { name: mother } }]
+                HTMLclass: htmlClass, image: imageName, text: { Sex: sex, name: fullName, Kinship: kinship, BirthPlaceAndDate: birthPlaceAndDate, DeathInfo: deathInfo }, children: [
+                    { HTMLclass: "gray", image: getFileName(father), text: { Sex: "E", name: father }, children:[] },
+                    { HTMLclass: "gray", image: getFileName(mother), text: { Sex: "K", name: mother }, children:[] }]
             };
 
             return person;
