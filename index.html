@@ -24,13 +24,18 @@
     <div>
         <p>1. turkiye.gov.tr adresinde soy ağacınızı görüntülediğiniz sayfayı .html olarak kaydedin.</p>
         <p>2. aşağıdaki butonu kullanarak kaydettiğiniz dosyayı seçin ve soy ağacınızı görüntüleyin.</p>
-        <p>yazılım tarayıcınızda çalışmaktadır, bilgilerinizi hiç bir yere göndermez. DON'T PANIC!</p>
-        <p>soy ağacınızı fotoğraflı görüntülemek isterseniz, bu sayfayı bilgisayarınıza kaydedin, ya da <a href="https://github.com/staviloglu/Taviloglu.FamilyTree">github hesabımdan</a> indirin.</p>
-        <p>dosya ismi {ad}_{soyad}_{doğumyeri}{doğumtarihi}.jpg olacak şekilde fotoğrafları hazırlayıp yazılımın dosyaları ile aynı klasöre bırakın</p>
-        <p>html dosyanızı tekrar yüklediğinizde fotoğraflı soy ağacınızı görebilirsiniz.</p> 
+        <p>* kişilerin sağ üstlerindeki kutucuğa tıklayarak, takip eden dalları kapatıp açabilirsiniz.</p>
+        <p>* yazılım tarayıcınızda çalışmaktadır, bilgilerinizi hiç bir yere/kimseye göndermez. DON'T PANIC!</p>
+        <br>
+        <p>soy ağacınızı fotoğraflı görüntülemek isterseniz, bu sayfayı bilgisayarınıza kaydedin, ya da
+            <a href="https://github.com/staviloglu/Taviloglu.FamilyTree">github hesabımdan</a> indirin.</p>
+        <p>dosya ismi {ad}_{soyad}_{doğumyeri}{doğumtarihi}.jpg olacak şekilde fotoğrafları hazırlayıp yazılımın dosyaları ile
+            aynı klasöre bırakın</p>
+        <p>html dosyanızı tekrar yüklediğinizde fotoğraflı soy ağacınızı görebilirsiniz.</p>
         <p></p>
     </div>
 
+	<br>
     <input type='file' id="uploadHtmlContent" onchange="readHtmlContent(this);" />
 
 
@@ -63,11 +68,19 @@
             var configObject = {
                 "chart": {
                     "container": "#basic-example",
+                    "animateOnInit": true,
                     "connectors": {
                         "type": "step"
                     },
                     "node": {
-                        "HTMLclass": "nodeExample1"
+                        "HTMLclass": "nodeExample1",
+                        "collapsable": true
+                    },
+                    "animation": {
+                        "nodeAnimation": "easeOutBounce",
+                        "nodeSpeed": 700,
+                        "connectorsAnimation": "bounce",
+                        "connectorsSpeed": 700
                     }
                 }, nodeStructure: {}
             };
@@ -109,8 +122,8 @@
                 i--;
             }
 
-             //Kinship ve Sex değerini göstermeyeceğiz
-            people.forEach(person => {  
+            //Kinship ve Sex değerini göstermeyeceğiz
+            people.forEach(person => {
                 deleteKinshipAndSexProperties(person);
             });
 
@@ -121,17 +134,16 @@
 
             $('img').on("error", handleError);
         }
-		
-		function deleteKinshipAndSexProperties(person)
-        {
-                delete person.text.Kinship;
-                delete person.text.Sex;
 
-                if(person.children.length == 0) return;
+        function deleteKinshipAndSexProperties(person) {
+            delete person.text.Kinship;
+            delete person.text.Sex;
 
-                person.children.forEach(parent=>{
-                    deleteKinshipAndSexProperties(parent);
-                });
+            if (person.children.length == 0) return;
+
+            person.children.forEach(parent => {
+                deleteKinshipAndSexProperties(parent);
+            });
         }
 
         function getPersonHavingKinship(peopleArray, kinship) {
@@ -154,7 +166,7 @@
 
         function processSpecificRow(row) {
             var $tds = $(row).find('td');
-			var sex = $tds.eq(1).text();
+            var sex = $tds.eq(1).text();
             var kinship = $tds.eq(2).text();
 
             var fullName = $tds.eq(3).text() + " " + $tds.eq(4).text();
@@ -178,8 +190,8 @@
 
             var person = {
                 HTMLclass: htmlClass, image: imageName, text: { Sex: sex, name: fullName, Kinship: kinship, BirthPlaceAndDate: birthPlaceAndDate, DeathInfo: deathInfo }, children: [
-                    { HTMLclass: "gray", image: getFileName(father), text: { Sex: "E", name: father }, children:[] },
-                    { HTMLclass: "gray", image: getFileName(mother), text: { Sex: "K", name: mother }, children:[] }]
+                    { HTMLclass: "gray", image: getFileName(father), text: { Sex: "E", name: father }, children: [] },
+                    { HTMLclass: "gray", image: getFileName(mother), text: { Sex: "K", name: mother }, children: [] }]
             };
 
             return person;
