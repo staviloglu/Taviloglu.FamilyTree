@@ -2,6 +2,9 @@
 <html>
 
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Content-Language" content="tr" />
@@ -27,7 +30,8 @@
 <body>
 
     <div>
-        <p>1. <a href="https://www.turkiye.gov.tr/nvi-alt-ust-soy-bilgisi-sorgulama">turkiye.gov.tr</a> adresinde soy ağacınızı görüntülediğiniz sayfayı .html olarak kaydedin.</p>
+        <p>1.
+            <a href="https://www.turkiye.gov.tr/nvi-alt-ust-soy-bilgisi-sorgulama">turkiye.gov.tr</a> adresinde soy ağacınızı görüntülediğiniz sayfayı .html olarak kaydedin.</p>
         <p>2. aşağıdaki butonu kullanarak kaydettiğiniz dosyayı seçin ve soy ağacınızı görüntüleyin.</p>
         <p>* kişilerin sağ üstlerindeki kutucuğa tıklayarak, takip eden dalları kapatıp açabilirsiniz.</p>
         <p>* yazılım tarayıcınızda çalışmaktadır, bilgilerinizi hiç bir yere/kimseye göndermez. DON'T PANIC!</p>
@@ -117,16 +121,16 @@
 
                 parents.forEach(parent => {
                     //kaydı olan parenti doğru bilgiler ile değiştir
-                for (var j = 0; j < parent.children.length; j++) {
-                    if (people[i].text.Sex == parent.children[j].text.Sex) {
-                        parent.children.splice(j, 1);
-                        break;
+                    for (var j = 0; j < parent.children.length; j++) {
+                        if (people[i].text.Sex == parent.children[j].text.Sex) {
+                            parent.children.splice(j, 1);
+                            break;
+                        }
                     }
-                }
 
-                parent.children.push(people[i]);
+                    parent.children.push(people[i]);
                 });
-                
+
                 i--;
             }
 
@@ -158,32 +162,26 @@
         function getPersonHavingKinship(peopleArray, kinship) {
 
             var retVal = []
-            for (var i = 0, len = peopleArray.length; i < len; i++)
-            {
-                if(kinship == "kids")
-                {
+            for (var i = 0, len = peopleArray.length; i < len; i++) {
+                if (kinship == "kids") {
                     if (peopleArray[i].text.Kinship == "Oğlu" || peopleArray[i].text.Kinship == "Kızı") retVal.push(peopleArray[i]);
                 }
-                else
-                {
-                    if (peopleArray[i].text.Kinship == kinship) 
-                    {
+                else {
+                    if (peopleArray[i].text.Kinship == kinship) {
                         retVal.push(peopleArray[i]);
-                        break;                    
+                        break;
                     }
                 }
             }
 
-            return retVal;                
+            return retVal;
         }
 
         function getParentKinshipKey(kinship, index) {
-            if(kinship=="Oğlu" || kinship=="Kızı") return null;
+            if (kinship == "Oğlu" || kinship == "Kızı") return null;
 
-            if (kinship == "Kendisi")
-            {
-                if(index == 0)
-                {
+            if (kinship == "Kendisi") {
+                if (index == 0) {
                     return null;
                 }
 
