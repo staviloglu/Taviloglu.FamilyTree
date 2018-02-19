@@ -25,27 +25,48 @@
 
         gtag('config', 'UA-114306499-1');
     </script>
+    <style>
+        ul {
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div>
-        <p>1.
-            <a href="https://www.turkiye.gov.tr/nvi-alt-ust-soy-bilgisi-sorgulama">turkiye.gov.tr</a> adresinde soy ağacınızı görüntülediğiniz sayfayı .html olarak kaydedin.</p>
-        <p>2. aşağıdaki butonu kullanarak kaydettiğiniz dosyayı seçin ve soy ağacınızı görüntüleyin.</p>
-        <p>* kişilerin sağ üstlerindeki kutucuğa tıklayarak, takip eden dalları kapatıp açabilirsiniz.</p>
-        <p>* yazılım tarayıcınızda çalışmaktadır, bilgilerinizi hiç bir yere/kimseye göndermez. DON'T PANIC!</p>
+    <div align="center" style="font-size: 100%;">
+        <ul>
+            <li>
+                <a href="https://www.turkiye.gov.tr/nvi-alt-ust-soy-bilgisi-sorgulama">turkiye.gov.tr</a> adresinde soy ağacınızı görüntülediğiniz sayfayı .html olarak kaydedin.</li>
+            <li>aşağıdaki butonu kullanarak kaydettiğiniz dosyayı seçin ve soy ağacınızı görüntüleyin.</li>
+            <li>kişilerin sağ üstlerindeki kutucuğa tıklayarak, takip eden dalları kapatıp açabilirsiniz.</li>
+            <li style="font-weight: bold;">yazılım tarayıcınızda çalışmaktadır, bilgilerinizi hiç bir yere/kimseye göndermez. DON'T PANIC!</li>
+        </ul>
+    </div>
+    <br>
+    <div align="center" style="font-size: 70%;">
+
+        <b>daha teknik kullanıcılar;</b>
         <br>
-        <p>soy ağacınızı fotoğraflı görüntülemek isterseniz, bu sayfayı bilgisayarınıza kaydedin, ya da
-            <a href="https://github.com/staviloglu/Taviloglu.FamilyTree">github hesabımdan</a> indirin.</p>
-        <p>dosya ismi {ad}_{soyad}_{doğumyeri}{doğumtarihi}.jpg olacak şekilde fotoğrafları hazırlayıp yazılımın dosyaları ile
-            aynı klasöre bırakın</p>
-        <p>html dosyanızı tekrar yüklediğinizde fotoğraflı soy ağacınızı görebilirsiniz.</p>
-        <p></p>
+        <ul>
+            <li>
+                <i>fotoğrafları değiştirmek için console dan faydalanabilirler.</i>
+            </li>
+            <li>
+                <i>Projenin kaynaklarını incelemek için
+                    <a href="https://github.com/staviloglu/Taviloglu.FamilyTree">github</a> a bakabilirler.</i>
+            </li>
+        </ul>
     </div>
 
     <br>
-    <input type='file' id="uploadHtmlContent" onchange="readHtmlContent(this);" />
+    <div align="center">
+        <input type='file' id="uploadHtmlContent" onchange="readHtmlContent(this);" />
+    </div>
+
 
 
     <div class="chart" id="basic-example" style="width:100%; height:100%"></div>
