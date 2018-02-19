@@ -111,11 +111,12 @@
             //sondan başa doğru giderek, her objenin parentlarını bularak, children değerlerini set et
             var i = people.length - 1;
             while (i > -1) {
-                var parentKinshipKey = getParentKinshipKey(people[i].text.Kinship);
+                var parentKinshipKey = getParentKinshipKey(people[i].text.Kinship, i);
                 if (parentKinshipKey == null) break;
-                var parent = getPersonHavingKinship(people, parentKinshipKey);
+                var parents = getPersonHavingKinship(people, parentKinshipKey);
 
-                //kaydı olan parenti doğru bilgiler ile değiştir
+                parents.forEach(parent => {
+                    //kaydı olan parenti doğru bilgiler ile değiştir
                 for (var j = 0; j < parent.children.length; j++) {
                     if (people[i].text.Sex == parent.children[j].text.Sex) {
                         parent.children.splice(j, 1);
@@ -124,6 +125,8 @@
                 }
 
                 parent.children.push(people[i]);
+                });
+                
                 i--;
             }
 
@@ -132,7 +135,8 @@
                 deleteKinshipAndSexProperties(person);
             });
 
-            //ilk obje tree diagram için root node olarak kullanılacak
+            //ilk obje tree diagram için root node olarak kullanılacak     
+            //sadece tek bir kişiden başlatabiliyoruz ağacı maalesef...       
             configObject.nodeStructure = people[0];
 
             new Treant(configObject);
@@ -153,12 +157,38 @@
 
         function getPersonHavingKinship(peopleArray, kinship) {
 
+            var retVal = []
             for (var i = 0, len = peopleArray.length; i < len; i++)
-                if (peopleArray[i].text.Kinship == kinship) return peopleArray[i];
+            {
+                if(kinship == "kids")
+                {
+                    if (peopleArray[i].text.Kinship == "Oğlu" || peopleArray[i].text.Kinship == "Kızı") retVal.push(peopleArray[i]);
+                }
+                else
+                {
+                    if (peopleArray[i].text.Kinship == kinship) 
+                    {
+                        retVal.push(peopleArray[i]);
+                        break;                    
+                    }
+                }
+            }
+
+            return retVal;                
         }
 
-        function getParentKinshipKey(kinship) {
-            if (kinship == "Kendisi") return null;
+        function getParentKinshipKey(kinship, index) {
+            if(kinship=="Oğlu" || kinship=="Kızı") return null;
+
+            if (kinship == "Kendisi")
+            {
+                if(index == 0)
+                {
+                    return null;
+                }
+
+                return "kids";
+            }
             if (kinship == "Annesi" || kinship == "Babası") return "Kendisi";
 
             var kinshipWords = kinship.split(" ");
